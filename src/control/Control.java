@@ -5,10 +5,23 @@
  */
 package control;
 
+import entity.*;
+import java.util.Collection;
+
 /**
  *
  * @author Bobbie
  */
 public class Control {
+    Facade f;
+
+    public Control() {
+        f = new Facade();
+    }
+    
+    public Collection<Opgave> getAllOpgave(){
+        return f.getAllOpgave();
+    }
+    
     
 }
