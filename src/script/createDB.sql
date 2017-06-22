@@ -29,27 +29,28 @@ CREATE TABLE `Tolk` (
   `Telefon` varchar(10) NOT NULL,
   `Email` varchar(100) NOT NULL,
   `Adresse` varchar(50) NOT NULL,
-  `Postnr` int(4),
+  `Postnr` varchar(50),
   PRIMARY KEY (`TolkID`));
 
-CREATE TABLE `Bevillinggiver` (
+/*CREATE TABLE `Bevillinggiver` (
   `GiverID` int(11) NOT NULL AUTO_INCREMENT,
-  `Navn` varchar(50) NOT NULL,
-  `Telefon` varchar(10) NOT NULL,
-  `Email` varchar(100) NOT NULL,
-  PRIMARY KEY (`giverID`));
+  `Navn` varchar(50) DEFAULT NULL,
+  `Telefon` varchar(10) DEFAULT NULL,
+  `Email` varchar(100) DEFAULT NULL,
+  PRIMARY KEY (`giverID`));*/
 
 CREATE TABLE `Bevilling` (
   `Bevillingsnummer` int(11) NOT NULL AUTO_INCREMENT,
   `Bruger` int(10) NOT NULL,
-  `Giver` int(11) NOT NULL,
+  `Navn` varchar(20) NOT NULL,
+  `Opgave` varchar(50) DEFAULT NULL, 
   `Timer` int(5) NOT NULL,
-  `BrugtTimer` int(5) DEFAULT NULL,
+  `PDF` mediumblob,
   PRIMARY KEY (`Bevillingsnummer`),
   KEY `Bruger` (`Bruger`),
-  KEY `Giver` (`Giver`),
-  CONSTRAINT `FK_BevillingBruger` FOREIGN KEY (`Bruger`) REFERENCES `Bruger` (`BrugerID`),
-  CONSTRAINT `FK_BevillingGiver` FOREIGN KEY (`Giver`) REFERENCES `Bevillinggiver` (`GiverID`)
+  /*KEY `Giver` (`Giver`),*/
+  CONSTRAINT `FK_BevillingBruger` FOREIGN KEY (`Bruger`) REFERENCES `Bruger` (`BrugerID`)
+  /*,CONSTRAINT `FK_BevillingGiver` FOREIGN KEY (`Giver`) REFERENCES `Bevillinggiver` (`GiverID`)*/
 ); 
 
 CREATE TABLE `Opgave` (
@@ -57,8 +58,10 @@ CREATE TABLE `Opgave` (
   `Bestiller` int(10) NOT NULL,
   `Bevillingsnummer` int(11) DEFAULT NULL,
   `Type` varchar(50) DEFAULT NULL,
-  `StartDatoTid` date NOT NULL,
-  `Længde` int(4) DEFAULT NULL,
+  `Dato` date NOT NULL,
+  `StartTid` int(4),
+  `SlutTid` int(4),
+  `Antaltolk` int(2) DEFAULT NULL,
   `Adresse` varchar(50) DEFAULT NULL,
   `Postnr` int(4) DEFAULT NULL,
   `Lokal` varchar(50) DEFAULT NULL,

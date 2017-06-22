@@ -14,6 +14,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
@@ -32,8 +33,9 @@ import javax.xml.bind.annotation.XmlTransient;
 @NamedQueries({
     @NamedQuery(name = "Bevilling.findAll", query = "SELECT b FROM Bevilling b"),
     @NamedQuery(name = "Bevilling.findByBevillingsnummer", query = "SELECT b FROM Bevilling b WHERE b.bevillingsnummer = :bevillingsnummer"),
-    @NamedQuery(name = "Bevilling.findByTimer", query = "SELECT b FROM Bevilling b WHERE b.timer = :timer"),
-    @NamedQuery(name = "Bevilling.findByBrugtTimer", query = "SELECT b FROM Bevilling b WHERE b.brugtTimer = :brugtTimer")})
+    @NamedQuery(name = "Bevilling.findByNavn", query = "SELECT b FROM Bevilling b WHERE b.navn = :navn"),
+    @NamedQuery(name = "Bevilling.findByOpgave", query = "SELECT b FROM Bevilling b WHERE b.opgave = :opgave"),
+    @NamedQuery(name = "Bevilling.findByTimer", query = "SELECT b FROM Bevilling b WHERE b.timer = :timer")})
 public class Bevilling implements Serializable {
     private static final long serialVersionUID = 1L;
     @Id
@@ -42,16 +44,19 @@ public class Bevilling implements Serializable {
     @Column(name = "Bevillingsnummer")
     private Integer bevillingsnummer;
     @Basic(optional = false)
+    @Column(name = "Navn")
+    private String navn;
+    @Column(name = "Opgave")
+    private String opgave;
+    @Basic(optional = false)
     @Column(name = "Timer")
     private int timer;
-    @Column(name = "BrugtTimer")
-    private Integer brugtTimer;
+    @Lob
+    @Column(name = "PDF")
+    private byte[] pdf;
     @JoinColumn(name = "Bruger", referencedColumnName = "BrugerID")
     @ManyToOne(optional = false)
     private Bruger bruger;
-    @JoinColumn(name = "Giver", referencedColumnName = "GiverID")
-    @ManyToOne(optional = false)
-    private Bevillinggiver giver;
     @OneToMany(mappedBy = "bevillingsnummer")
     private Collection<Opgave> opgaveCollection;
 
@@ -62,8 +67,9 @@ public class Bevilling implements Serializable {
         this.bevillingsnummer = bevillingsnummer;
     }
 
-    public Bevilling(Integer bevillingsnummer, int timer) {
+    public Bevilling(Integer bevillingsnummer, String navn, int timer) {
         this.bevillingsnummer = bevillingsnummer;
+        this.navn = navn;
         this.timer = timer;
     }
 
@@ -75,6 +81,22 @@ public class Bevilling implements Serializable {
         this.bevillingsnummer = bevillingsnummer;
     }
 
+    public String getNavn() {
+        return navn;
+    }
+
+    public void setNavn(String navn) {
+        this.navn = navn;
+    }
+
+    public String getOpgave() {
+        return opgave;
+    }
+
+    public void setOpgave(String opgave) {
+        this.opgave = opgave;
+    }
+
     public int getTimer() {
         return timer;
     }
@@ -83,12 +105,12 @@ public class Bevilling implements Serializable {
         this.timer = timer;
     }
 
-    public Integer getBrugtTimer() {
-        return brugtTimer;
+    public byte[] getPdf() {
+        return pdf;
     }
 
-    public void setBrugtTimer(Integer brugtTimer) {
-        this.brugtTimer = brugtTimer;
+    public void setPdf(byte[] pdf) {
+        this.pdf = pdf;
     }
 
     public Bruger getBruger() {
@@ -97,14 +119,6 @@ public class Bevilling implements Serializable {
 
     public void setBruger(Bruger bruger) {
         this.bruger = bruger;
-    }
-
-    public Bevillinggiver getGiver() {
-        return giver;
-    }
-
-    public void setGiver(Bevillinggiver giver) {
-        this.giver = giver;
     }
 
     @XmlTransient

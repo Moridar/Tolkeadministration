@@ -66,13 +66,10 @@ public class Bruger implements Serializable {
         @JoinColumn(name = "Opgavenummer", referencedColumnName = "Opgavenummer")})
     @ManyToMany
     private Collection<Opgave> opgaveCollection;
-    @JoinTable(name = "opgavebruger", joinColumns = {
-        @JoinColumn(name = "BrugerID", referencedColumnName = "BrugerID")}, inverseJoinColumns = {
-        @JoinColumn(name = "Opgavenummer", referencedColumnName = "Opgavenummer")})
-    @ManyToMany
-    private Collection<Opgave> opgaveCollection1;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "bruger")
     private Collection<Bevilling> bevillingCollection;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "bestiller")
+    private Collection<Opgave> opgaveCollection1;
 
     public Bruger() {
     }
@@ -153,21 +150,21 @@ public class Bruger implements Serializable {
     }
 
     @XmlTransient
-    public Collection<Opgave> getOpgaveCollection1() {
-        return opgaveCollection1;
-    }
-
-    public void setOpgaveCollection1(Collection<Opgave> opgaveCollection1) {
-        this.opgaveCollection1 = opgaveCollection1;
-    }
-
-    @XmlTransient
     public Collection<Bevilling> getBevillingCollection() {
         return bevillingCollection;
     }
 
     public void setBevillingCollection(Collection<Bevilling> bevillingCollection) {
         this.bevillingCollection = bevillingCollection;
+    }
+
+    @XmlTransient
+    public Collection<Opgave> getOpgaveCollection1() {
+        return opgaveCollection1;
+    }
+
+    public void setOpgaveCollection1(Collection<Opgave> opgaveCollection1) {
+        this.opgaveCollection1 = opgaveCollection1;
     }
 
     @Override

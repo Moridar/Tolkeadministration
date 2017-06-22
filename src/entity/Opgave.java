@@ -15,7 +15,6 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
 import javax.persistence.Lob;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
@@ -36,10 +35,13 @@ import javax.xml.bind.annotation.XmlTransient;
 @XmlRootElement
 @NamedQueries({
     @NamedQuery(name = "Opgave.findAll", query = "SELECT o FROM Opgave o"),
+    @NamedQuery(name = "Opgave.findAllOrderByDato", query = "SELECT o FROM Opgave o ORDER BY o.dato"),
     @NamedQuery(name = "Opgave.findByOpgavenummer", query = "SELECT o FROM Opgave o WHERE o.opgavenummer = :opgavenummer"),
     @NamedQuery(name = "Opgave.findByType", query = "SELECT o FROM Opgave o WHERE o.type = :type"),
-    @NamedQuery(name = "Opgave.findByStartDatoTid", query = "SELECT o FROM Opgave o WHERE o.startDatoTid = :startDatoTid"),
-    @NamedQuery(name = "Opgave.findByL\u00e6ngde", query = "SELECT o FROM Opgave o WHERE o.l\u00e6ngde = :l\u00e6ngde"),
+    @NamedQuery(name = "Opgave.findByDato", query = "SELECT o FROM Opgave o WHERE o.dato = :dato"),
+    @NamedQuery(name = "Opgave.findByStartTid", query = "SELECT o FROM Opgave o WHERE o.startTid = :startTid"),
+    @NamedQuery(name = "Opgave.findBySlutTid", query = "SELECT o FROM Opgave o WHERE o.slutTid = :slutTid"),
+    @NamedQuery(name = "Opgave.findByAntaltolk", query = "SELECT o FROM Opgave o WHERE o.antaltolk = :antaltolk"),
     @NamedQuery(name = "Opgave.findByAdresse", query = "SELECT o FROM Opgave o WHERE o.adresse = :adresse"),
     @NamedQuery(name = "Opgave.findByPostnr", query = "SELECT o FROM Opgave o WHERE o.postnr = :postnr"),
     @NamedQuery(name = "Opgave.findByLokal", query = "SELECT o FROM Opgave o WHERE o.lokal = :lokal")})
@@ -53,11 +55,15 @@ public class Opgave implements Serializable {
     @Column(name = "Type")
     private String type;
     @Basic(optional = false)
-    @Column(name = "StartDatoTid")
+    @Column(name = "Dato")
     @Temporal(TemporalType.DATE)
-    private Date startDatoTid;
-    @Column(name = "L\u00e6ngde")
-    private Integer længde;
+    private Date dato;
+    @Column(name = "StartTid")
+    private Integer startTid;
+    @Column(name = "SlutTid")
+    private Integer slutTid;
+    @Column(name = "Antaltolk")
+    private Integer antaltolk;
     @Column(name = "Adresse")
     private String adresse;
     @Column(name = "Postnr")
@@ -67,17 +73,15 @@ public class Opgave implements Serializable {
     @Lob
     @Column(name = "Ekstra")
     private String ekstra;
+    
     @ManyToMany(mappedBy = "opgaveCollection")
     private Collection<Tolk> tolkCollection;
-    @JoinTable(name = "opgavetolk", joinColumns = {
-        @JoinColumn(name = "Opgavenummer", referencedColumnName = "Opgavenummer")}, inverseJoinColumns = {
-        @JoinColumn(name = "TolkID", referencedColumnName = "TolkID")})
-    @ManyToMany
-    private Collection<Tolk> tolkCollection1;
+    
     @ManyToMany(mappedBy = "opgaveCollection")
     private Collection<Bruger> brugerCollection;
-    @ManyToMany(mappedBy = "opgaveCollection1")
-    private Collection<Bruger> brugerCollection1;
+    @JoinColumn(name = "Bestiller", referencedColumnName = "BrugerID")
+    @ManyToOne(optional = false)
+    private Bruger bestiller;
     @JoinColumn(name = "Bevillingsnummer", referencedColumnName = "Bevillingsnummer")
     @ManyToOne
     private Bevilling bevillingsnummer;
@@ -89,9 +93,9 @@ public class Opgave implements Serializable {
         this.opgavenummer = opgavenummer;
     }
 
-    public Opgave(Integer opgavenummer, Date startDatoTid) {
+    public Opgave(Integer opgavenummer, Date dato) {
         this.opgavenummer = opgavenummer;
-        this.startDatoTid = startDatoTid;
+        this.dato = dato;
     }
 
     public Integer getOpgavenummer() {
@@ -110,20 +114,36 @@ public class Opgave implements Serializable {
         this.type = type;
     }
 
-    public Date getStartDatoTid() {
-        return startDatoTid;
+    public Date getDato() {
+        return dato;
     }
 
-    public void setStartDatoTid(Date startDatoTid) {
-        this.startDatoTid = startDatoTid;
+    public void setDato(Date dato) {
+        this.dato = dato;
     }
 
-    public Integer getLængde() {
-        return længde;
+    public Integer getStartTid() {
+        return startTid;
     }
 
-    public void setLængde(Integer længde) {
-        this.længde = længde;
+    public void setStartTid(Integer startTid) {
+        this.startTid = startTid;
+    }
+
+    public Integer getSlutTid() {
+        return slutTid;
+    }
+
+    public void setSlutTid(Integer slutTid) {
+        this.slutTid = slutTid;
+    }
+
+    public Integer getAntaltolk() {
+        return antaltolk;
+    }
+
+    public void setAntaltolk(Integer antaltolk) {
+        this.antaltolk = antaltolk;
     }
 
     public String getAdresse() {
@@ -168,15 +188,6 @@ public class Opgave implements Serializable {
     }
 
     @XmlTransient
-    public Collection<Tolk> getTolkCollection1() {
-        return tolkCollection1;
-    }
-
-    public void setTolkCollection1(Collection<Tolk> tolkCollection1) {
-        this.tolkCollection1 = tolkCollection1;
-    }
-
-    @XmlTransient
     public Collection<Bruger> getBrugerCollection() {
         return brugerCollection;
     }
@@ -185,13 +196,12 @@ public class Opgave implements Serializable {
         this.brugerCollection = brugerCollection;
     }
 
-    @XmlTransient
-    public Collection<Bruger> getBrugerCollection1() {
-        return brugerCollection1;
+    public Bruger getBestiller() {
+        return bestiller;
     }
 
-    public void setBrugerCollection1(Collection<Bruger> brugerCollection1) {
-        this.brugerCollection1 = brugerCollection1;
+    public void setBestiller(Bruger bestiller) {
+        this.bestiller = bestiller;
     }
 
     public Bevilling getBevillingsnummer() {

@@ -61,14 +61,12 @@ public class Tolk implements Serializable {
     @Column(name = "Adresse")
     private String adresse;
     @Column(name = "Postnr")
-    private Integer postnr;
+    private String postnr;
     @JoinTable(name = "tilknyttet", joinColumns = {
         @JoinColumn(name = "TolkID", referencedColumnName = "TolkID")}, inverseJoinColumns = {
         @JoinColumn(name = "Opgavenummer", referencedColumnName = "Opgavenummer")})
     @ManyToMany
     private Collection<Opgave> opgaveCollection;
-    @ManyToMany(mappedBy = "tolkCollection1")
-    private Collection<Opgave> opgaveCollection1;
 
     public Tolk() {
     }
@@ -134,11 +132,11 @@ public class Tolk implements Serializable {
         this.adresse = adresse;
     }
 
-    public Integer getPostnr() {
+    public String getPostnr() {
         return postnr;
     }
 
-    public void setPostnr(Integer postnr) {
+    public void setPostnr(String postnr) {
         this.postnr = postnr;
     }
 
@@ -149,15 +147,6 @@ public class Tolk implements Serializable {
 
     public void setOpgaveCollection(Collection<Opgave> opgaveCollection) {
         this.opgaveCollection = opgaveCollection;
-    }
-
-    @XmlTransient
-    public Collection<Opgave> getOpgaveCollection1() {
-        return opgaveCollection1;
-    }
-
-    public void setOpgaveCollection1(Collection<Opgave> opgaveCollection1) {
-        this.opgaveCollection1 = opgaveCollection1;
     }
 
     @Override
